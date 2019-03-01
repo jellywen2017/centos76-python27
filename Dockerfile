@@ -4,6 +4,8 @@ MAINTAINER jellywen <1307553378@qq.com>
 ENV PYTHON_VERSION 2.7.13
 ADD Python-$PYTHON_VERSION.tgz /home/extension/
 
+ADD requirements.txt /
+
 RUN set -x && \
     yum install -y gcc \
     gcc-c++ \
@@ -47,17 +49,18 @@ RUN set -x && \
     mkdir -p /data/{www,phpext} && \
     useradd -r -s /sbin/nologin -d /data/www -m -k no www && \
 
-#for swoole
-    cd /home/extension/Python-$SWOOLE_VERSION && \
-    ./configure --prefix=/usr/local && \
-    make -j8 && make install && \
-    /usr/local/bin/python2.7 -m ensurepip && \
-
 #Install supervisor
     easy_install supervisor && \
     mkdir -p /var/{log/supervisor,run/{sshd,supervisord}} && \
     touch /tmp/supervisor.sock && \
     chmod 777 /tmp/supervisor.sock && \
+
+#for python
+    cd /home/extension/Python-$PYTHON_VERSION && \
+    ./configure --prefix=/usr/local && \
+    make -j8 && make install && \
+    /usr/local/bin/python2.7 -m ensurepip && \
+    pip install -r $dir/requirements.txt && \
 
 #Clean OS
     yum remove -y gcc \
@@ -114,9 +117,6 @@ ENV LINES 50
 #Add supervisord conf
 ADD supervisord.conf /etc/
 ADD supervisor.d/ /etc/supervisor.d/
-
-#Create web folder
-VOLUME ["/data/www/simple","/usr/local/nginx/logs", "/usr/local/nginx/conf/ssl", "/usr/local/nginx/conf/vhost", "/usr/local/php/log", "/usr/local/php/etc/php.d"]
 
 #Update nginx config
 ADD extfile/logrotate.d/ /etc/logrotate.d/
