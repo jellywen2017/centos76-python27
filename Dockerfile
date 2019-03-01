@@ -39,6 +39,9 @@ RUN set -x && \
     python-setuptools \
     logrotate && \
 
+    yum install -y tar \
+    bzip2-devel ncurses-devel sqlite-devel readline-devel tk-devel && \
+
 # Install Other
     yum install -y vim \
     cronie \
