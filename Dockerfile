@@ -15,32 +15,15 @@ RUN set -x && \
     make \
     cmake && \
 
-#Install PHP library
-## libmcrypt-devel DIY
-    rpm -ivh http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm && \
-    yum install -y zlib \
-    zlib-devel \
-    openssl \
-    openssl-devel \
-    pcre-devel \
-    libxml2 \
-    libxml2-devel \
-    libcurl \
-    libcurl-devel \
-    libpng-devel \
-    libjpeg-devel \
-    freetype-devel \
-    libmcrypt-devel \
-    openssh-server \
-    wget \
-    rsync \
-    lrzsz \
-    git \
-    python-setuptools \
-    logrotate && \
-
     yum install -y tar \
-    bzip2-devel ncurses-devel sqlite-devel readline-devel tk-devel && \
+    git bzip2-devel ncurses-devel sqlite-devel readline-devel tk-devel openssl-devel zlib-devel && \
+
+#for python
+    cd /home/extension/Python-$PYTHON_VERSION && \
+    ./configure --prefix=/usr/local && \
+    make -j8 && make install && \
+    /usr/local/bin/python2.7 -m ensurepip && \
+    pip install -r $dir/requirements.txt && \
 
 # Install Other
     yum install -y vim \
@@ -57,13 +40,6 @@ RUN set -x && \
     mkdir -p /var/{log/supervisor,run/{sshd,supervisord}} && \
     touch /tmp/supervisor.sock && \
     chmod 777 /tmp/supervisor.sock && \
-
-#for python
-    cd /home/extension/Python-$PYTHON_VERSION && \
-    ./configure --prefix=/usr/local && \
-    make -j8 && make install && \
-    /usr/local/bin/python2.7 -m ensurepip && \
-    pip install -r $dir/requirements.txt && \
 
 #Clean OS
     yum remove -y gcc \
