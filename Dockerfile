@@ -76,17 +76,7 @@ RUN set -x && \
     export LC_ALL=zh_CN.utf8 && \
 
     #校准时间
-    \cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-
-    #防止提示
-    rm -rf /etc/ssh/ssh_host_rsa_key && \
-    rm -rf /etc/ssh/ssh_host_ecdsa_key && \
-    rm -rf /etc/ssh/ssh_host_ed25519_key && \
-    ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N '' && \
-    ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N '' && \
-    ssh-keygen -t dsa -f /etc/ssh/ssh_host_ed25519_key -N '' && \
-    /usr/sbin/sshd && \
-    echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+    \cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime 
 
 #防止宽度高度不足
 ENV LC_ALL zh_CN.utf8
