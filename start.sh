@@ -12,6 +12,6 @@ DATA_DIR=/data/www
 
 #启动crond
 /usr/sbin/crond start
-/bin/bash
+# /bin/bash
 #开启nginx php-fpm 服务
-#/usr/bin/supervisord -n -c /etc/supervisord.conf
+supervisord -n -c /etc/supervisord.conf

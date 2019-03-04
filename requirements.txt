@@ -21,7 +21,6 @@ scipy==1.0.0
 singledispatch==3.4.0.3
 six==1.11.0
 statsmodels==0.8.0
-supervisor==3.3.4
 urllib3==1.22
 virtualenv==15.1.0
 xgboost==0.6a2

@@ -1,0 +1,9 @@
+/usr/local/nginx/logs/access.log /usr/local/nginx/logs/error.log {
+daily
+rotate 3
+size 300M
+sharedscripts
+postrotate
+/usr/local/nginx/sbin/nginx -s reload
+endscript
+}

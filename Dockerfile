@@ -1,7 +1,9 @@
 FROM centos:7.6.1810
 MAINTAINER jellywen <1307553378@qq.com>
 
+ENV NGINX_VERSION 1.14.1
 ENV PYTHON_VERSION 2.7.13
+ADD nginx-$NGINX_VERSION.tar.gz /home/extension/
 ADD Python-$PYTHON_VERSION.tgz /home/extension/
 
 ADD requirements.txt /
@@ -34,6 +36,20 @@ RUN set -x && \
 #Add user
     mkdir -p /data/{www,phpext} && \
     useradd -r -s /sbin/nologin -d /data/www -m -k no www && \
+
+#Make install nginx
+    cd /home/extension/nginx-$NGINX_VERSION && \
+    ./configure --prefix=/usr/local/nginx \
+    --user=www --group=www \
+    --error-log-path=/var/log/nginx_error.log \
+    --http-log-path=/var/log/nginx_access.log \
+    --pid-path=/var/run/nginx.pid \
+    --with-pcre \
+    --with-http_ssl_module \
+    --without-mail_pop3_module \
+    --without-mail_imap_module \
+    --with-http_gzip_static_module && \
+    make -j8 && make install && \
 
 #Install supervisor
     easy_install supervisor && \
@@ -87,9 +103,19 @@ ENV LINES 50
 ADD supervisord.conf /etc/
 ADD supervisor.d/ /etc/supervisor.d/
 
+#Create web folder
+VOLUME ["/data/www/simple","/usr/local/nginx/logs", "/usr/local/nginx/conf/ssl", "/usr/local/nginx/conf/vhost", "/usr/local/php/log", "/usr/local/php/etc/php.d"]
+
 #Update nginx config
 ADD extfile/logrotate.d/ /etc/logrotate.d/
 
+#Update nginx config
+ADD nginx.conf /usr/local/nginx/conf/
+ADD simple/nginx-simple-server.conf /usr/local/nginx/conf/vhost/nginx-simple-server.conf
+ADD extfile/logrotate.d/ /etc/logrotate.d/
+
+ADD simple/index.php /data/www/simple/index.php
+ADD simple/index.html /data/www/simple/index.html
 
 #Start
 ADD start.sh /
